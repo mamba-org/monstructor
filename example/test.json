@@ -1,0 +1,82 @@
+[
+  {
+    "base_url": "https://conda.anaconda.org/conda-forge",
+    "build_number": 0,
+    "build_string": "conda_forge",
+    "channel": "conda-forge",
+    "dist_name": "_libgcc_mutex-0.1-conda_forge",
+    "name": "_libgcc_mutex",
+    "platform": "linux-64",
+    "version": "0.1"
+  },
+  {
+    "base_url": "https://conda.anaconda.org/conda-forge",
+    "build_number": 14,
+    "build_string": "1_gnu",
+    "channel": "conda-forge",
+    "dist_name": "_openmp_mutex-4.5-1_gnu",
+    "name": "_openmp_mutex",
+    "platform": "linux-64",
+    "version": "4.5"
+  },
+  {
+    "base_url": "https://conda.anaconda.org/conda-forge",
+    "build_number": 16,
+    "build_string": "h24d8f2e_16",
+    "channel": "conda-forge",
+    "dist_name": "libgcc-ng-9.3.0-h24d8f2e_16",
+    "name": "libgcc-ng",
+    "platform": "linux-64",
+    "version": "9.3.0"
+  },
+  {
+    "base_url": "https://conda.anaconda.org/conda-forge",
+    "build_number": 16,
+    "build_string": "h24d8f2e_16",
+    "channel": "conda-forge",
+    "dist_name": "libgomp-9.3.0-h24d8f2e_16",
+    "name": "libgomp",
+    "platform": "linux-64",
+    "version": "9.3.0"
+  },
+  {
+    "base_url": "https://conda.anaconda.org/conda-forge",
+    "build_number": 16,
+    "build_string": "hdf63c60_16",
+    "channel": "conda-forge",
+    "dist_name": "libstdcxx-ng-9.3.0-hdf63c60_16",
+    "name": "libstdcxx-ng",
+    "platform": "linux-64",
+    "version": "9.3.0"
+  },
+  {
+    "base_url": "https://conda.anaconda.org/conda-forge",
+    "build_number": 0,
+    "build_string": "hc9558a2_0",
+    "channel": "conda-forge",
+    "dist_name": "xtl-0.6.18-hc9558a2_0",
+    "name": "xtl",
+    "platform": "linux-64",
+    "version": "0.6.18"
+  },
+  {
+    "base_url": "https://conda.anaconda.org/conda-forge",
+    "build_number": 0,
+    "build_string": "hc9558a2_0",
+    "channel": "conda-forge",
+    "dist_name": "xsimd-7.4.8-hc9558a2_0",
+    "name": "xsimd",
+    "platform": "linux-64",
+    "version": "7.4.8"
+  },
+  {
+    "base_url": "https://conda.anaconda.org/conda-forge",
+    "build_number": 0,
+    "build_string": "hc9558a2_0",
+    "channel": "conda-forge",
+    "dist_name": "xtensor-0.21.5-hc9558a2_0",
+    "name": "xtensor",
+    "platform": "linux-64",
+    "version": "0.21.5"
+  }
+]
