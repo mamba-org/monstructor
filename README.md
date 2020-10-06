@@ -1,4 +1,6 @@
-# monstructor, a stand-alone installer generator based on mamba
+### monstructor, a stand-alone installer generator based on mamba
+
+**Note: very early stage software**
 
 Monstructor generates standalone installers (similar to `constructor` for conda) that uses `conda` packages and the C++ of `mamba` to install the packages.
 
