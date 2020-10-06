@@ -18,9 +18,18 @@ set(MONSTRUCTOR_SOURCES
     ${MONSTRUCTOR_SOURCE_DIR}/installer.cpp
 )
 
+if (WIN32)
+	include_directories($ENV{CONDA_PREFIX}/Library/include)
+endif()
+
 add_executable(monstructor ${MONSTRUCTOR_SOURCES})
 set_property(TARGET monstructor PROPERTY CXX_STANDARD 17)
-target_link_libraries(monstructor mamba)
+if (WIN32)
+	find_library(MAMBA_LIBRARY NAMES libmamba_static)
+	target_link_libraries(monstructor ${MAMBA_LIBRARY})
+else()
+	target_link_libraries(monstructor mamba)
+endif()
 target_link_libraries(monstructor nlohmann_json)
 
 find_library(LIBSOLV_LIBRARIES NAMES solv)

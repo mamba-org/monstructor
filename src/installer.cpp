@@ -15,7 +15,7 @@ void write_repodata_json(const fs::path& pkg_file,
     fs::path index_path = pkg / "info" / "index.json";
 
     nlohmann::json index, solvable_json;
-    std::ifstream index_file(index_path);
+    std::ifstream index_file(index_path, std::ios::in | std::ios::binary);
     index_file >> index;
 
     // what's missing?!
@@ -35,7 +35,7 @@ void write_repodata_json(const fs::path& pkg_file,
     index["channel"] = channel;
     index["fn"] = filename;
 
-    std::ofstream repodata_record(repodata_record_path);
+    std::ofstream repodata_record(repodata_record_path, std::ios::out | std::ios::binary);
     repodata_record << index.dump(4);
 }
 
@@ -86,7 +86,7 @@ void link_to_prefix(const fs::path& prefix, const std::vector<std::string>& pkgs
 
     for (auto& pkg : extracted_pkgs)
     {
-        std::ifstream repodata_json(pkg / "info" / "repodata_record.json");
+        std::ifstream repodata_json(pkg / "info" / "repodata_record.json", std::ios::in | std::ios::binary);
         nlohmann::json pkg_info_json;
         repodata_json >> pkg_info_json;
         mamba::PackageInfo pkg_info(std::move(pkg_info_json));
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
     auto bin = mamba::get_self_exe_path();
 
     // first extract json
-    std::ifstream self_exe(bin);
+    std::ifstream self_exe(bin, std::ios::in | std::ios::binary);
     self_exe.seekg(self_size);
     std::string json_buf(json_size, ' ');
     self_exe.read(json_buf.data(), json_size);
@@ -136,7 +136,7 @@ int main(int argc, char** argv)
             fs::create_directories(target_prefix / "pkgs");
         }
         fs::path pkg_file = target_prefix / "pkgs" / pkg_meta["fn"];
-        std::ofstream tmp_s(pkg_file);
+        std::ofstream tmp_s(pkg_file, std::ios::out | std::ios::binary);
 
         std::array<char, BUF_SIZE> pkg_buf;
         std::ptrdiff_t archive_size = pkg_meta["size"];
