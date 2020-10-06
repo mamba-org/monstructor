@@ -1,6 +1,7 @@
 #include <mamba/link.hpp>
 #include <mamba/validate.hpp>
 #include <mamba/shell_init.hpp>
+#include <CLI/CLI.hpp>
 
 static std::string magic_numbers = "thisisaverylongstringthatshouldbereplacedbythebuildprocessabcdef";
 
@@ -38,7 +39,7 @@ void write_repodata_json(const fs::path& pkg_file,
     repodata_record << index.dump(4);
 }
 
-void link_to_prefix(const fs::path& prefix, const std::vector<std::string>& pkgs)
+void link_to_prefix(const fs::path& prefix, const std::vector<std::string>& pkgs, const nlohmann::json& repodata)
 {
     // new transaction context without Python version!
     mamba::TransactionContext tc(prefix, "");
@@ -78,9 +79,9 @@ void link_to_prefix(const fs::path& prefix, const std::vector<std::string>& pkgs
         write_repodata_json(
             root_prefix / "pkgs" / pkg_name,
             pkg_extr,
-            "NONE",
-            "NONE",
-            "NONE");
+            repodata["url"],
+            repodata["channel"],
+            repodata["fn"]);
     }
 
     for (auto& pkg : extracted_pkgs)
@@ -94,9 +95,15 @@ void link_to_prefix(const fs::path& prefix, const std::vector<std::string>& pkgs
     }
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    std::cout << magic_numbers << std::endl;
+    CLI::App app{"Monstructor"};
+
+    fs::path prefix_path = "~/monstructor";
+    app.add_option("-p,--prefix", prefix_path, "Path to prefix")->required();
+
+    CLI11_PARSE(app, argc, argv);
+
     std::vector<std::string> sizes = mamba::split(magic_numbers, ";");
     int self_size = std::stoi(sizes[0].c_str());
     int json_size = std::stoi(sizes[1].c_str());
@@ -106,55 +113,45 @@ int main()
 
     mamba::Context::instance().verbosity = 3;
 
-    fs::path target_prefix = "/home/wolfv/miniconda3/envs/testxenv2/";
+    fs::path target_prefix = mamba::env::expand_user(prefix_path);
 
     auto bin = mamba::get_self_exe_path();
 
     // first extract json
-
     std::ifstream self_exe(bin);
     self_exe.seekg(self_size);
-    std::string buf(json_size, ' ');
-    self_exe.read(buf.data(), json_size);
-    std::cout << buf << std::endl;
+    std::string json_buf(json_size, ' ');
+    self_exe.read(json_buf.data(), json_size);
 
-    auto payload_meta = nlohmann::json::parse(buf);
+    auto payload_meta = nlohmann::json::parse(json_buf);
 
-    for (auto& payload_pkg : payload_meta)
+    for (auto& pkg_meta : payload_meta)
     {
         const std::size_t BUF_SIZE = 8096;
 
-        std::cout << payload_pkg << "\n\n" << std::endl;
+        std::cout << pkg_meta << "\n\n" << std::endl;
 
         if (!fs::exists(target_prefix / "pkgs"))
         {
             fs::create_directories(target_prefix / "pkgs");
         }
-        fs::path pkg_file = target_prefix / "pkgs" / payload_pkg["fn"];
+        fs::path pkg_file = target_prefix / "pkgs" / pkg_meta["fn"];
         std::ofstream tmp_s(pkg_file);
 
-        char buf[BUF_SIZE];
-        std::ptrdiff_t archive_size = payload_pkg["size"];
+        std::array<char, BUF_SIZE> pkg_buf;
+        std::ptrdiff_t archive_size = pkg_meta["size"];
+        std::ptrdiff_t read_size = archive_size;
 
-        for (std::ptrdiff_t i = archive_size; i > BUF_SIZE; i -= BUF_SIZE)
+        for (; read_size > BUF_SIZE; read_size -= BUF_SIZE)
         {
-            self_exe.read(&buf[0], BUF_SIZE);
-            tmp_s.write(&buf[0], BUF_SIZE);
+            self_exe.read(pkg_buf.data(), BUF_SIZE);
+            tmp_s.write(pkg_buf.data(), BUF_SIZE);
         }
-
-        std::ptrdiff_t rest = archive_size % BUF_SIZE;
-
-        self_exe.read(&buf[0], rest);
-        tmp_s.write(&buf[0], rest);
+        self_exe.read(pkg_buf.data(), read_size);
+        tmp_s.write(pkg_buf.data(), read_size);
         tmp_s.close();
 
-        link_to_prefix(target_prefix, std::vector<std::string>{pkg_file.string()});
+        link_to_prefix(target_prefix, std::vector<std::string>{pkg_file.string()}, pkg_meta);
     }
-
-
-    // link_to_prefix("/home/wolfv/miniconda3/envs/testxenv2/", pkgs);
-
-
-
     return 0;
 }

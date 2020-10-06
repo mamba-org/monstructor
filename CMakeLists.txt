@@ -11,8 +11,6 @@ project(monstructor)
 set(MONSTRUCTOR_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(MONSTRUCTOR_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-include_directories(/home/wolfv/Programs/mamba/include)
-
 find_package(Threads REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
@@ -22,7 +20,7 @@ set(MONSTRUCTOR_SOURCES
 
 add_executable(monstructor ${MONSTRUCTOR_SOURCES})
 set_property(TARGET monstructor PROPERTY CXX_STANDARD 17)
-target_link_libraries(monstructor /home/wolfv/Programs/mamba/build/libmamba.a)
+target_link_libraries(monstructor mamba)
 target_link_libraries(monstructor nlohmann_json)
 
 find_library(LIBSOLV_LIBRARIES NAMES solv)

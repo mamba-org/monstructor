@@ -29,7 +29,8 @@ with open(sys.argv[1], 'rb+') as fi:
 with open(sys.argv[2]) as json_fi:
 	json_files = json.loads(json_fi.read())
 
-pkgs_cache = "/home/wolfv/miniconda3/pkgs/"
+root_prefix = os.environ["CONDA_PREFIX"] if int(os.environ["CONDA_SHLVL"]) == 1 else os.environ["CONDA_PREFIX_1"]
+pkgs_cache = os.path.join(root_prefix, 'pkgs')
 
 for f in json_files:
 	with open(os.path.join(pkgs_cache, f['dist_name'], 'info/repodata_record.json')) as repodata_json:
@@ -44,8 +45,8 @@ payload_size = 0
 outfile = sys.argv[1] + '.done'
 with open(outfile, 'wb') as fo:
 
-	for file in json_files:
-		full_file = pkgs_cache + file['dist_name'] + '.tar.bz2'
+	for repodata in json_files:
+		full_file = os.path.join(pkgs_cache, repodata['fn'])
 		payload_size += os.path.getsize(full_file)
 
 	print(f"Sizes: {self_size}, {json_size}, {payload_size}")
@@ -55,12 +56,11 @@ with open(outfile, 'wb') as fo:
 	fo.write(data)
 	fo.write(json_bytes)
 
-	for file in json_files:
-		print(file['dist_name'])
-		full_file = pkgs_cache + file['dist_name'] + '.tar.bz2'
+	for repodata in json_files:
+		print(repodata['dist_name'])
+		full_file = os.path.join(pkgs_cache, repodata['fn'])
 		with open(full_file, 'rb') as pkg_in:
 			fo.write(pkg_in.read())
-
 
 st = os.stat(outfile)
 os.chmod(outfile, st.st_mode | stat.S_IEXEC)
